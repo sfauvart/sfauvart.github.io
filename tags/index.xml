@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Blog</title>
+    <link>http://sfauvart.github.io/tags/</link>
+    <description>Recent content in Tags on Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>fr-fr</language>
+    <lastBuildDate>Sat, 21 Oct 2017 23:27:24 +0200</lastBuildDate>
+    
+	<atom:link href="http://sfauvart.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Docker</title>
+      <link>http://sfauvart.github.io/tags/docker/</link>
+      <pubDate>Sat, 21 Oct 2017 23:27:24 +0200</pubDate>
+      
+      <guid>http://sfauvart.github.io/tags/docker/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hypriot</title>
+      <link>http://sfauvart.github.io/tags/hypriot/</link>
+      <pubDate>Sat, 21 Oct 2017 23:27:24 +0200</pubDate>
+      
+      <guid>http://sfauvart.github.io/tags/hypriot/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Mongodb</title>
+      <link>http://sfauvart.github.io/tags/mongodb/</link>
+      <pubDate>Sat, 21 Oct 2017 23:27:24 +0200</pubDate>
+      
+      <guid>http://sfauvart.github.io/tags/mongodb/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Raspberrypi</title>
+      <link>http://sfauvart.github.io/tags/raspberrypi/</link>
+      <pubDate>Sat, 21 Oct 2017 23:27:24 +0200</pubDate>
+      
+      <guid>http://sfauvart.github.io/tags/raspberrypi/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

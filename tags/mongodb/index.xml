@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Mongodb on Blog</title>
+    <link>http://sfauvart.github.io/tags/mongodb/</link>
+    <description>Recent content in Mongodb on Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>fr-fr</language>
+    <lastBuildDate>Sat, 21 Oct 2017 23:27:24 +0200</lastBuildDate>
+    
+	<atom:link href="http://sfauvart.github.io/tags/mongodb/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>MongoDb 3.4 sur Raspberry Pi 3 64Bits avec Docker (Hypriot)</title>
+      <link>http://sfauvart.github.io/post/mongodb34-raspberrypi-docker-hypriot/</link>
+      <pubDate>Sat, 21 Oct 2017 23:27:24 +0200</pubDate>
+      
+      <guid>http://sfauvart.github.io/post/mongodb34-raspberrypi-docker-hypriot/</guid>
+      <description>Récemment je me suis lancé un petit défi : Utiliser un Raspberry Pi 3 pour auto-héberger un petit projet.
+Le projet en question utilise :
+ VueJS pour le Front GoLang pour le Back (API Rest) MongoDb pour le stockage des données  Voilà pour la stack applicative.
+Pour héberger tout ça sur le Raspberrypi, j&amp;rsquo;ai utilisé un OS &amp;ldquo;spécial&amp;rdquo; pour le Raspberrypi 3 : HypriotOS
+Cet OS est une version 64Bits de Raspbian avec Docker pré-installé</description>
+    </item>
+    
+  </channel>
+</rss>
