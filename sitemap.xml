@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>http://www.sebastien-fauvart.fr/post/continuous-integration-part-1/</loc>
+    <lastmod>2019-02-23T22:27:24+02:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://www.sebastien-fauvart.fr/mentions-legales/</loc>
     <lastmod>2017-10-21T23:27:24+02:00</lastmod>
   </url>
@@ -14,7 +19,7 @@
   
   <url>
     <loc>http://www.sebastien-fauvart.fr/</loc>
-    <lastmod>2017-10-21T23:27:24+02:00</lastmod>
+    <lastmod>2019-02-23T22:27:24+02:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -24,8 +29,20 @@
   </url>
   
   <url>
+    <loc>http://www.sebastien-fauvart.fr/tags/ci/cd/</loc>
+    <lastmod>2019-02-23T22:27:24+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://www.sebastien-fauvart.fr/tags/docker/</loc>
-    <lastmod>2017-10-21T23:27:24+02:00</lastmod>
+    <lastmod>2019-02-23T22:27:24+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.sebastien-fauvart.fr/tags/gitlab-runner/</loc>
+    <lastmod>2019-02-23T22:27:24+02:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -42,8 +59,14 @@
   </url>
   
   <url>
+    <loc>http://www.sebastien-fauvart.fr/tags/nexus/</loc>
+    <lastmod>2019-02-23T22:27:24+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://www.sebastien-fauvart.fr/post/</loc>
-    <lastmod>2017-10-21T23:27:24+02:00</lastmod>
+    <lastmod>2019-02-23T22:27:24+02:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -54,8 +77,14 @@
   </url>
   
   <url>
+    <loc>http://www.sebastien-fauvart.fr/tags/sonar/</loc>
+    <lastmod>2019-02-23T22:27:24+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://www.sebastien-fauvart.fr/tags/</loc>
-    <lastmod>2017-10-21T23:27:24+02:00</lastmod>
+    <lastmod>2019-02-23T22:27:24+02:00</lastmod>
     <priority>0</priority>
   </url>
   

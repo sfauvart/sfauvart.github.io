@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="fr-fr">
+    <head>
+         
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Usine logicielle avec Gitlab runner, Nexus, Sonar - Partie 1</title>
+        
+        <style>
+
+    html body {
+        font-family: 'Raleway', sans-serif;
+        background-color: white;
+    }
+
+    :root {
+        --accent: #1B9DEA;
+        --border-width:  5px ;
+    }
+
+</style>
+
+
+<link rel="stylesheet" href="http://www.sebastien-fauvart.fr/css/main.css">
+
+
+ <link rel="stylesheet" href="http://www.sebastien-fauvart.fr/css/custom.css"> 
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+
+
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/agate.min.css"> 
+
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+ 
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/go.min.js"></script>  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/kotlin.min.js"></script>  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/scala.min.js"></script>  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/swift.min.js"></script>  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/console.min.js"></script>  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/bash.min.js"></script>  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/docker.min.js"></script>  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/toml.min.js"></script> 
+
+    <script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+
+<script>$(document).on('click', function() { $('.collapse').collapse('hide'); })</script>
+ <meta name="generator" content="Hugo 0.40.1" />
+        
+
+        
+        
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40228055-5"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments)};
+          gtag('js', new Date());
+
+          gtag('config', 'UA-40228055-5');
+        </script>
+        
+    </head>
+
+    
+    
+    <script type="text/javascript" async
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+    
+
+    <body>
+         
+        <nav class="navbar navbar-default navbar-fixed-top">
+
+            <div class="container">
+
+                <div class="navbar-header">
+
+                    <a class="navbar-brand visible-xs" href="#">Usine logicielle avec Gitlab runner, Nexus, Sonar - Partie 1</a>
+
+                    <button class="navbar-toggle" data-target=".navbar-collapse" data-toggle="collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+
+                </div>
+
+                <div class="collapse navbar-collapse">
+
+                    
+                        <ul class="nav navbar-nav">
+                            
+                                <li><a href="/">Accueil</a></li>
+                            
+                                <li><a href="/post/">Posts</a></li>
+                            
+                                <li><a href="/mentions-legales">Mentions légales</a></li>
+                            
+                        </ul>
+                    
+
+                    
+                        <ul class="nav navbar-nav navbar-right">
+                            
+                                <li class="navbar-icon"><a href="https://github.com/sfauvart/"><i class="fa fa-github"></i></a></li>
+                            
+                                <li class="navbar-icon"><a href="https://twitter.com/SebFauvart/"><i class="fa fa-twitter"></i></a></li>
+                            
+                                <li class="navbar-icon"><a href="https://www.linkedin.com/in/s%C3%A9bastien-fauvart-a7b2a66b/"><i class="fa fa-linkedin"></i></a></li>
+                            
+                        </ul>
+                    
+
+                </div>
+
+            </div>
+
+        </nav>
+
+
+<main>
+
+    <div class="item">
+
+    
+    
+    
+
+    
+    
+
+    <h4><a href="/post/continuous-integration-part-1/">Usine logicielle avec Gitlab runner, Nexus, Sonar - Partie 1</a></h4>
+    <h5>February 23, 2019</h5>
+    
+    <a href="http://www.sebastien-fauvart.fr/tags/gitlab-runner"><kbd class="item-tag">gitlab-runner</kbd></a>
+    
+    <a href="http://www.sebastien-fauvart.fr/tags/ci/cd"><kbd class="item-tag">ci/cd</kbd></a>
+    
+    <a href="http://www.sebastien-fauvart.fr/tags/docker"><kbd class="item-tag">docker</kbd></a>
+    
+    <a href="http://www.sebastien-fauvart.fr/tags/nexus"><kbd class="item-tag">nexus</kbd></a>
+    
+    <a href="http://www.sebastien-fauvart.fr/tags/sonar"><kbd class="item-tag">sonar</kbd></a>
+    
+
+</div>
+
+
+    <br> <div class="text-justify">
+
+<h1 id="intro">Introduction</h1>
+
+<p>La vérification de la qualité de votre code, l&rsquo;exécution de toutes sortes de tests et le maintien du contrôle de version peut devenir une tâche difficile à gérer.</p>
+
+<p>Et nous, les développeurs, en tant que créatures paresseuses, avons tendance à automatiser toutes ces tâches à répétition.</p>
+
+<p>Un service d&rsquo;intégration continue (CI) une fois configuré avec notre environnement d&rsquo;application peut lancer toutes ces tâches automatiquement chaque fois que le code est modifié dans nos référentiels.</p>
+
+<p>Mieux encore, nous verrons comment faire de la livraison continue !</p>
+
+<p>Cet article donne les détails d&rsquo;une mise en place d&rsquo;un ensemble d&rsquo;outils permettant d&rsquo;avoir un registre privé d&rsquo;artefacts (Java, npm ou encore docker), de l&rsquo;intégration continue, de la livraison continue et du contrôle de qualité automatisé.</p>
+
+<h1 id="big-picture">BigPicture</h1>
+
+<p>Voici l&rsquo;ensemble des outils qui seront utilisés :</p>
+
+<ul>
+<li>Gitlab (ici dans sa version cloud, <a href="https://gitlab.com">https://gitlab.com</a>) mais une version on-premise peut être utilisé</li>
+<li><a href="https://docs.gitlab.com/runner/">Gitlab-runner</a></li>
+<li><a href="https://fr.sonatype.com/nexus-repository-oss">Nexus Repository OSS</a></li>
+<li><a href="https://www.sonarqube.org/">SonarQube</a></li>
+<li><a href="https://www.docker.com">Docker</a></li>
+<li><a href="https://traefik.io/">Traefik</a></li>
+<li><a href="https://letsencrypt.org/">Let&rsquo;s encrypt</a></li>
+<li><a href="https://vuejs.org/">Vuejs</a>, <a href="https://gobuffalo.io/fr">Buffalo</a> et <a href="https://www.postgresql.org/">PostgreSQL</a> pour l&rsquo;application d&rsquo;exemple</li>
+<li>De plusieurs VMs ou machine physique (ici quelques machines chez <a href="https://www.scaleway.com/">Scaleway</a>)</li>
+</ul>
+
+<p>Petit schéma qui explique rapidement la cinématique de notre automatisation :</p>
+
+<p><img src="/images/GitlabRunner-Page-1.png" alt="Cycle" /></p>
+
+<blockquote>
+<p>Icons made by <a href="http://www.freepik.com/">Freepik</a> from <a href="https://www.flaticon.com/">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/">CC 3.0 BY</a></p>
+</blockquote>
+
+<p>Donc dans les grandes lignes :</p>
+
+<ul>
+<li>Les développeurs poussent leur code dans un référentiel de code, ici en l&rsquo;occurrence <a href="https://gitlab.com">GitLab</a></li>
+<li>Suivant la branche utilisée, une pipeline est déclenchée. Une pipeline est un ensemble d&rsquo;étapes (<em>stages</em>) et de tâches (<em>jobs</em>) définies dans un fichier <strong>.gitlab-ci.yml</strong></li>
+<li>Les dépendances sont installées, les tests exécutés, au besoin le livrable est stocké dans un référentiel (ici Nexus)</li>
+<li>Si tout c&rsquo;est bien déroulé, on exécute une livraison sur le serveur applicatif.</li>
+</ul>
+
+<p>Voici un schéma de l&rsquo;infrastructure qui sera mis en place :</p>
+
+<p><img src="/images/GitlabRunner-Page-2.png" alt="infrastructure" /></p>
+
+<blockquote>
+<p>Icons made by <a href="http://www.freepik.com/">Freepik</a> from <a href="https://www.flaticon.com/">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/">CC 3.0 BY</a></p>
+</blockquote>
+
+<h1 id="installation-de-notre-machine-devtools">Installation de notre machine &ldquo;DevTools&rdquo;</h1>
+
+<p>Entrons dans le vif du sujet maintenant !</p>
+
+<h2 id="vm-devtools">VM DevTools</h2>
+
+<p>Tout d&rsquo;abord il nous faut donc une machine pour préparer notre usine logicielle !</p>
+
+<p>Pour notre tuto du jour, j&rsquo;ai fait le choix d&rsquo;une VM de type <strong>START1-L (8 vCpu, 8Go Ram, 50Go LSSD)</strong> chez <a href="https://www.scaleway.com/pricing/#anchor_starter">Scaleway</a>.
+C&rsquo;est pas cher (moins de 20 € TTC/mois), c&rsquo;est français et ça marche bien, mais libre à vous de choisir un autre hébergeur.</p>
+
+<p>Nexus et Sonarqube sont plutôt gourmand en mémoire.</p>
+
+<p>Prenez une Ubuntu Bionic, juste parce que c&rsquo;est une distribution bien répandu, bien suivie et vous trouverez de <a href="https://stackoverflow.com/questions/tagged/ubuntu">l&rsquo;aide facilement</a>.</p>
+
+<p>Je vous conseille fortement de créer un groupe de sécurité et de l&rsquo;affecter à votre nouveau serveur :</p>
+
+<p><img src="/images/SecurityGroupScaleway1.png" alt="Security Group Scaleway" /></p>
+
+<p>Par défaut je <strong>refuse</strong> tout le trafic entrant et <strong>accepte</strong> tout le trafic sortant.</p>
+
+<p>Puis j&rsquo;autorise uniquement le trafic entrant sur le port 80 et 443 (HTTP et HTTPS) provenant de n&rsquo;importe quel IP.</p>
+
+<p>Enfin j&rsquo;autorise le trafic entrant sur tout les ports mais uniquement sur l&rsquo;IP correspondant à ma connexion internet.</p>
+
+<h2 id="installation-de-docker-et-de-docker-compose">Installation de docker et de docker-compose</h2>
+
+<p>J&rsquo;ai choisi d&rsquo;utiliser docker car c&rsquo;est pratique pour le déploiement et on trouve les images officiels pour Nexus et SonarQube.</p>
+
+<p>J&rsquo;ai aussi fait le choix d&rsquo;utiliser docker-compose pour ne pas à avoir à gérer la complexité d&rsquo;un orchestrateur de type Swarm ou Kubernetes par exemple.</p>
+
+<p>Voici les commandes shell à lancer sur votre VM toute fraîche :</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">apt update &amp;&amp; apt upgrade
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+
+curl -L &#34;https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)&#34; -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose</code></pre></div>
+
+<p>Nous avons donc maintenant docker qui est installé et opérationnel.</p>
+
+<h2 id="installation-de-traefik">Installation de Traefik</h2>
+
+<p>Maintenant nous allons installer Traefik qui nous permettra d&rsquo;avoir un reverse proxy et la gestion automatique pour nos certificat SSL via Let&rsquo;s encrypt.</p>
+
+<p>Référence <a href="https://docs.traefik.io/user-guide/docker-and-lets-encrypt/">https://docs.traefik.io/user-guide/docker-and-lets-encrypt/</a></p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">mkdir -p /opt/traefik
+touch /opt/traefik/docker-compose.yml
+touch /opt/traefik/acme.json &amp;&amp; chmod 600 /opt/traefik/acme.json
+touch /opt/traefik/traefik.toml</code></pre></div>
+
+<p><strong>/opt/traefik/docker-compose.yml :</strong>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile">version: <span style="color:#e6db74">&#39;2&#39;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>services:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  traefik:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    image: traefik:1.5.4<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    restart: always<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    ports:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - <span style="color:#ae81ff">80</span>:80<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - <span style="color:#ae81ff">443</span>:443<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - <span style="color:#ae81ff">8080</span>:8080<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    networks:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - web<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    volumes:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - /var/run/docker.sock:/var/run/docker.sock<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - /opt/traefik/traefik.toml:/traefik.toml<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - /opt/traefik/acme.json:/acme.json<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    container_name: traefik<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>networks:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  web:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    external: true</code></pre></div></p>
+
+<p>Ici le docker-compose est très simple, on fait le lien avec les fichiers de configuration sur notre machine hôte.
+Enfin se fichier permet de créer un réseau nommé <em>web</em> qui nous permettra de faire sortir notre trafic web.</p>
+
+<p><strong>/opt/traefik/traefik.toml :</strong>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml"><span style="color:#a6e22e">debug</span> = <span style="color:#66d9ef">false</span>
+
+<span style="color:#a6e22e">logLevel</span> = <span style="color:#e6db74">&#34;ERROR&#34;</span>
+<span style="color:#a6e22e">defaultEntryPoints</span> = [<span style="color:#e6db74">&#34;https&#34;</span>,<span style="color:#e6db74">&#34;http&#34;</span>]
+
+<span style="color:#75715e"># WEB interface of Traefik - it will show web page with overview of frontend and backend configurations</span>
+[<span style="color:#a6e22e">api</span>]
+  <span style="color:#a6e22e">entryPoint</span> = <span style="color:#e6db74">&#34;traefik&#34;</span>
+  <span style="color:#a6e22e">dashboard</span> = <span style="color:#66d9ef">true</span>
+  <span style="color:#a6e22e">address</span> = <span style="color:#e6db74">&#34;:8080&#34;</span>
+
+[<span style="color:#a6e22e">entryPoints</span>]
+  [<span style="color:#a6e22e">entryPoints</span>.<span style="color:#a6e22e">http</span>]
+  <span style="color:#a6e22e">address</span> = <span style="color:#e6db74">&#34;:80&#34;</span>
+    [<span style="color:#a6e22e">entryPoints</span>.<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">redirect</span>]
+    <span style="color:#a6e22e">entryPoint</span> = <span style="color:#e6db74">&#34;https&#34;</span>
+  [<span style="color:#a6e22e">entryPoints</span>.<span style="color:#a6e22e">https</span>]
+  <span style="color:#a6e22e">address</span> = <span style="color:#e6db74">&#34;:443&#34;</span>
+  [<span style="color:#a6e22e">entryPoints</span>.<span style="color:#a6e22e">https</span>.<span style="color:#a6e22e">tls</span>]
+
+[<span style="color:#a6e22e">retry</span>]
+
+[<span style="color:#a6e22e">docker</span>]
+<span style="color:#a6e22e">endpoint</span> = <span style="color:#e6db74">&#34;unix:///var/run/docker.sock&#34;</span>
+<span style="color:#a6e22e">domain</span> = <span style="color:#e6db74">&#34;scw-par1-devtools.IP_VM_SCALEWAY.nip.io&#34;</span>
+<span style="color:#a6e22e">watch</span> = <span style="color:#66d9ef">true</span>
+<span style="color:#a6e22e">exposedByDefault</span> = <span style="color:#66d9ef">false</span>
+
+[<span style="color:#a6e22e">acme</span>]
+<span style="color:#a6e22e">email</span> = <span style="color:#e6db74">&#34;email@example.com&#34;</span>
+<span style="color:#a6e22e">storage</span> = <span style="color:#e6db74">&#34;acme.json&#34;</span>
+<span style="color:#a6e22e">entryPoint</span> = <span style="color:#e6db74">&#34;https&#34;</span>
+<span style="color:#a6e22e">onHostRule</span> = <span style="color:#66d9ef">true</span>
+[<span style="color:#a6e22e">acme</span>.<span style="color:#a6e22e">httpChallenge</span>]
+<span style="color:#a6e22e">entryPoint</span> = <span style="color:#e6db74">&#34;http&#34;</span></code></pre></div></p>
+
+<p>Le fichier de configuration est simple aussi :</p>
+
+<ul>
+<li>on redirige tout trafic entrant http vers https</li>
+<li>on définie un domaine principal via la variable <em>domain</em>. Vous pouvez utiliser un domaine que vous avez fait pointer sur votre IP publique scaleway ou alors utiliser le service wildcard DNS de <a href="http://nip.io/">http://nip.io/</a></li>
+<li>n&rsquo;oubliez pas renseigner votre adresse <em>email</em> dans la variable prévue à cet effet</li>
+</ul>
+
+<p>Allez c&rsquo;est partie, on lance le docker traefik ! :</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">cd /opt/traefik/
+docker network create web
+docker-compose up -d</code></pre></div>
+
+<p>Si tout se passe bien, le containeur est UP :</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">root@scw-par1-devtools:/opt/traefik# docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS                                                              NAMES
+ecd1c9413f2f        traefik:1.5.4       &#34;/traefik&#34;          23 hours ago        Up 23 hours         0.0.0.0:80-&gt;80/tcp, 0.0.0.0:443-&gt;443/tcp, 0.0.0.0:8080-&gt;8080/tcp   traefik</code></pre></div>
+
+<p>Allez faire un tour sur le domaine que vous avez configuré, vous devriez avoir un joli <strong>404 page not found</strong> provenant de traefik.
+Mais le plus intéressant sera de jeter un oeil sur le port 8080 (qui n&rsquo;est ouvert que sur les IPs autorisées du groupe de sécurité bien-sur !).</p>
+
+<h2 id="installation-de-nexus">Installation de Nexus</h2>
+
+<p>Faite comme pour traefik, créer un répertoire /opt/nexus3/ et y mettre le fichier docker-compose.yml suivant :</p>
+
+<p><strong>/opt/nexus3/docker-compose.yml</strong>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile">version: <span style="color:#e6db74">&#34;3&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>services:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  nexus:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    image: sonatype/nexus3<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    restart: always<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    volumes:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - <span style="color:#e6db74">&#34;nexus-data:/nexus-data&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    networks:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - web<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - default<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    expose:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - <span style="color:#e6db74">&#34;8081&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    labels:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - <span style="color:#e6db74">&#34;traefik.backend=nexus3&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - <span style="color:#e6db74">&#34;traefik.docker.network=web&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - <span style="color:#e6db74">&#34;traefik.frontend.rule=Host:nexus3.scw-par1-devtools.IP_VM_SCALEWAY.nip.io&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - <span style="color:#e6db74">&#34;traefik.enable=true&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - <span style="color:#e6db74">&#34;traefik.port=8081&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>volumes:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  nexus-data: <span style="color:#f92672">{}</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>networks:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  web:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    external: true</code></pre></div></p>
+
+<p>Pensez à remplacer la valeur de <em>traefik.frontend.rule</em> avec votre domaine ou IP scaleway.</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">cd /opt/nexus3/
+docker-compose up -d</code></pre></div>
+
+<p>A ce stade, vous devez avoir accès à une interface web via l&rsquo;url précisé dans la variable <em>traefik.frontend.rule</em>.
+Par défaut, le login est <strong>admin</strong> et le mot de passe est <strong>admin123</strong>.
+Évidement, je vous conseils de le changer :</p>
+
+<p><img src="/images/Nexus-Admin-Account.png" alt="Nexus-Admin-Account" /></p>
+
+<p>Vous pouvez aussi refuser la consultation de votre registre aux utilisateurs non identifiés dans la configuration en décochant l&rsquo;option <em>Allow anonymous users to access the server</em> :</p>
+
+<p><img src="/images/Nexus-Anonymous.png" alt="Nexus-Anonymous" /></p>
+
+<p>Passons a la configuration d&rsquo;un repository npm pour les dépendances javascript de votre équipe.</p>
+
+<p>La première étape consiste à configurer un &lsquo;blob storage&rsquo; dans Nexus.
+Il s&rsquo;agit d&rsquo;un espace de stockage où Nexus enregistre vos fichiers (dans notre cas lors d&rsquo;un <code>npm publish</code>).
+Vous pouvez configurer un blob de type local (sur le disque de votre machine) ou un bucket S3.
+Dans mon cas, j&rsquo;ai choisi de créer un bucket S3 sur Scaleway.
+L&rsquo;avantage est que je n&rsquo;ai pas à me soucier de la sauvegarde des objets publiés. De plus si pour un besoin quelconque j&rsquo;ai besoin de recréer/déménager ma VM, le changement sera facile.</p>
+
+<p>Dans votre console scaleway, créez un bucket via le menu <code>object storage</code> :</p>
+
+<p><img src="/images/Scaleway-Create-Bucket.png" alt="Scaleway-Create-Bucket" /></p>
+
+<p>Ensuite vous aurez besoin d&rsquo;un <code>Access key</code> et d&rsquo;un <code>Secret key</code>, pour cela il faut les générer via <a href="https://console.scaleway.com/account/credentials">https://console.scaleway.com/account/credentials</a></p>
+
+<p><img src="/images/Scaleway-Create-APIKEY.png" alt="Scaleway-Create-APIKEY" /></p>
+
+<p>Normalement la création d&rsquo;un blob store dans nexus se fait facilement via l&rsquo;interface web.
+Malheureusement le formulaire de création possède une limitation bien gênante : la région est une liste prédéfinie avec les valeurs uniquement valable pour AWS.
+J&rsquo;ai réussi à contourner le problème en utilisant curl :</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">curl &#39;https://nexus3.scw-par1-devtools.IP_VM_SCALEWAY.nip.io/service/extdirect&#39; -H &#39;content-type: application/json&#39; -H &#39;Accept: */*&#39; --user admin:XXXXXXXXXX --data-binary &#39;{&#34;action&#34;:&#34;coreui_Blobstore&#34;,&#34;method&#34;:&#34;create&#34;,&#34;data&#34;:[{&#34;type&#34;:&#34;S3&#34;,&#34;name&#34;:&#34;bucket-devtools&#34;,&#34;isQuotaEnabled&#34;:false,&#34;attributes&#34;:{&#34;s3&#34;:{&#34;bucket&#34;:&#34;bucket-devtools-darma&#34;,&#34;prefix&#34;:&#34;nexus3/npm&#34;,&#34;accessKeyId&#34;:&#34;SCWXXXXXXXXXXXXXXXXX&#34;,&#34;secretAccessKey&#34;:&#34;abcdefgh-ijkl-mnop-qrst-uvwxyz&#34;,&#34;sessionToken&#34;:&#34;&#34;,&#34;assumeRole&#34;:&#34;&#34;,&#34;region&#34;:&#34;nl-ams&#34;,&#34;endpoint&#34;:&#34;https://s3.nl-ams.scw.cloud/&#34;,&#34;expiration&#34;:&#34;-1&#34;,&#34;signertype&#34;:&#34;DEFAULT&#34;,&#34;forcepathstyle&#34;:&#34;false&#34;}}}],&#34;type&#34;:&#34;rpc&#34;,&#34;tid&#34;:15}&#39; --compressed</code></pre></div>
+
+<p>Évidemment, remplacez les valeurs qui correspondent à votre domaine, nom de bucket, login/mot de passe nexus et access/secret de votre object storage.
+La valeur de prefix, permet d&rsquo;avoir un répertoire racine dans votre bucket (utile pour mutualiser le bucket ;-)).</p>
+
+<p>Maintenant nous allons créer 3 repositories :</p>
+
+<ul>
+<li>un privé pour nos package perso :</li>
+</ul>
+
+<p><img src="/images/Nexus-Admin-Repo-NPM-Private.png" alt="Nexus-Admin-Repo-NPM-Private" /></p>
+
+<p>Le paramètre <code>Deployment policy</code> permet d&rsquo;autoriser ou non la republication d&rsquo;une même version.</p>
+
+<ul>
+<li>un proxy vers le registry npmjs :</li>
+</ul>
+
+<p><img src="/images/Nexus-Admin-Repo-NPM-Proxy.png" alt="Nexus-Admin-Repo-NPM-Proxy" /></p>
+
+<ul>
+<li>un group qui permet de réunir les deux en un seul endpoint</li>
+</ul>
+
+<p><img src="/images/Nexus-Admin-Repo-NPM-Group.png" alt="Nexus-Admin-Repo-NPM-Group" /></p>
+
+<p>Il faut maintenant activer l&rsquo;authentification NPM dans Nexus :</p>
+
+<p><img src="/images/Nexus-Admin-Realms.png" alt="Nexus-Admin-Realms" /></p>
+
+<p>Enfin ! Nous allons pouvoir faire un essai depuis notre machine de dév.</p>
+
+<p>De manière générale, on utilise le repo npm-group :</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">npm config set registry https://nexus3.scw-par1-devtools.IP_VM_SCALEWAY.nip.io/repository/npm-group/
+npm login</code></pre></div>
+
+<p>Dans ce cas, pour publier vos projets vous devrez paramétrer vos projet npm avec :</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#960050;background-color:#1e0010">...</span>
+
+  <span style="color:#f92672">&#34;publishConfig&#34;</span>: {
+    <span style="color:#f92672">&#34;registry&#34;</span>: <span style="color:#e6db74">&#34;https://nexus3.scw-par1-devtools.IP_VM_SCALEWAY.nip.io/repository/npm-private/&#34;</span>
+  }
+}</code></pre></div>
+
+<p>Ou alors, on utilise uniquement le repo npm-private via les <a href="https://docs.npmjs.com/about-scopes">scopes</a> npm :</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">npm config set @moah:registry https://nexus3.scw-par1-devtools.IP_VM_SCALEWAY.nip.io/repository/npm-private/
+npm login --scope=@moah</code></pre></div>
+
+<p>source : <a href="https://blog.sonatype.com/using-nexus-3-as-your-repository-part-2-npm-packages">https://blog.sonatype.com/using-nexus-3-as-your-repository-part-2-npm-packages</a></p>
+
+<h2 id="installation-de-sonarqube">Installation de SonarQube</h2>
+
+<p>Aller, on continue ! Créez un répertoire /opt/sonarqube/ et y mettre le fichier docker-compose.yml suivant :</p>
+
+<p><strong>/opt/sonarqube/docker-compose.yml</strong>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile">version: <span style="color:#e6db74">&#34;3&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>services:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  sonarqube:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    image: sonarqube<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    restart: always<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    expose:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - <span style="color:#e6db74">&#34;9000&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    networks:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - web<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - sonarnet<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    environment:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - SONARQUBE_JDBC_URL<span style="color:#f92672">=</span>jdbc:postgresql://sonar-db:5432/sonar<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    volumes:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - sonarqube_conf:/opt/sonarqube/conf<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - sonarqube_data:/opt/sonarqube/data<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - sonarqube_extensions:/opt/sonarqube/extensions<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - sonarqube_bundled-plugins:/opt/sonarqube/lib/bundled-plugins<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    labels:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - <span style="color:#e6db74">&#34;traefik.backend=sonarqube&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - <span style="color:#e6db74">&#34;traefik.docker.network=web&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - <span style="color:#e6db74">&#34;traefik.frontend.rule=Host:sonarqube.scw-par1-devtools.IP_VM_SCALEWAY.nip.io&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - <span style="color:#e6db74">&#34;traefik.enable=true&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - <span style="color:#e6db74">&#34;traefik.port=9000&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  sonar-db:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    image: postgres:alpine<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    networks:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - sonarnet<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    environment:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - POSTGRES_USER<span style="color:#f92672">=</span>sonar<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - POSTGRES_PASSWORD<span style="color:#f92672">=</span>sonar<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    volumes:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - postgresql:/var/lib/postgresql<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      # This needs explicit mapping due to https://github.com/docker-library/postgres/blob/4e48e3228a30763913ece952c611e5e9b95c8759/Dockerfile.template#L52<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>      - postgresql_data:/var/lib/postgresql/data<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>networks:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  web:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    external: true<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  sonarnet:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    driver: bridge<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>volumes:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  sonarqube_conf:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  sonarqube_data:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  sonarqube_extensions:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  sonarqube_bundled-plugins:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  postgresql:<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  postgresql_data:</code></pre></div></p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">cd /opt/sonarqube/
+docker-compose up -d</code></pre></div>
+
+<p>A ce stade, vous devez avoir accès à une interface web via l&rsquo;url précisé dans la variable <em>traefik.frontend.rule</em>.
+Par défaut, le login est <strong>admin</strong> et le mot de passe est <strong>admin</strong>.
+Évidement, je vous conseille de le changer :</p>
+
+<p><img src="/images/SonarQube-Admin-Account.png" alt="SonarQube-Admin-Account" /></p>
+
+<p>Administration &gt; Configuration &gt; Security
+Activer <strong>Force user authentication</strong></p>
+
+<p><img src="/images/SonarQube-ForceUserAuth.png" alt="SonarQube-ForceUserAuth" /></p>
+
+<h2 id="installation-d-un-runner-gitlab">Installation d&rsquo;un runner GitLab</h2>
+
+<p>Créez un répertoire pour stocker la configuration ainsi que nos clefs SSH pour le déploiement.
+Récupérez le token d&rsquo;enregistrement dans l&rsquo;interface de GitLab dans le menu <code>Settings &gt; CI / CD</code>.
+Utilisez le générateur de configuration :</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">$ mkdir -p /opt/gitlab-runner/config
+$ mkdir -p /opt/gitlab-runner/ssh-keys
+$ docker run --rm -t -i -v /opt/gitlab-runner/config:/etc/gitlab-runner gitlab/gitlab-runner register
+
+Please enter the gitlab-ci coordinator URL (e.g. https://gitlab.com/):
+https://gitlab.com/
+Please enter the gitlab-ci token for this runner:
+ZVXnXXXWxfyGYAYYYoYv
+Please enter the gitlab-ci description for this runner:
+[8aab126cc600]: runner DevTools
+Please enter the gitlab-ci tags for this runner (comma separated):
+docker,devtools
+Registering runner... succeeded                     runner=ZVXnXXXW
+Please enter the executor: ssh, docker+machine, kubernetes, docker, docker-ssh, parallels, shell, virtualbox, docker-ssh+machine:
+docker
+Please enter the default Docker image (e.g. ruby:2.1):
+alpine:latest
+Runner registered successfully. Feel free to start it, but if it&#39;s running already the config should be automatically reloaded!</code></pre></div>
+
+<p>Modifiez le fichier de configuration qui vient d&rsquo;être généré :</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml"><span style="color:#a6e22e">concurrent</span> = <span style="color:#ae81ff">1</span>
+<span style="color:#a6e22e">check_interval</span> = <span style="color:#ae81ff">0</span>
+
+[<span style="color:#a6e22e">session_server</span>]
+  <span style="color:#a6e22e">session_timeout</span> = <span style="color:#ae81ff">1800</span>
+
+[[<span style="color:#a6e22e">runners</span>]]
+  <span style="color:#a6e22e">name</span> = <span style="color:#e6db74">&#34;runner DevTools ams1&#34;</span>
+  <span style="color:#a6e22e">url</span> = <span style="color:#e6db74">&#34;https://gitlab.com/&#34;</span>
+  <span style="color:#a6e22e">token</span> = <span style="color:#e6db74">&#34;XXXXXXXXXXXX&#34;</span>
+  <span style="color:#a6e22e">executor</span> = <span style="color:#e6db74">&#34;docker&#34;</span>
+  [<span style="color:#a6e22e">runners</span>.<span style="color:#a6e22e">docker</span>]
+    <span style="color:#a6e22e">tls_verify</span> = <span style="color:#66d9ef">false</span>
+    <span style="color:#a6e22e">image</span> = <span style="color:#e6db74">&#34;alpine:latest&#34;</span>
+    <span style="color:#a6e22e">privileged</span> = <span style="color:#66d9ef">false</span>
+    <span style="color:#a6e22e">disable_entrypoint_overwrite</span> = <span style="color:#66d9ef">false</span>
+    <span style="color:#a6e22e">oom_kill_disable</span> = <span style="color:#66d9ef">false</span>
+    <span style="color:#a6e22e">disable_cache</span> = <span style="color:#66d9ef">false</span>
+    <span style="color:#a6e22e">volumes</span> = [<span style="color:#e6db74">&#34;/cache&#34;</span>,<span style="color:#e6db74">&#34;/data_docker/gitlab-runner/ssh-keys:/ssh-keys&#34;</span>]
+    <span style="color:#a6e22e">shm_size</span> = <span style="color:#ae81ff">0</span>
+  [<span style="color:#a6e22e">runners</span>.<span style="color:#a6e22e">cache</span>]
+    <span style="color:#a6e22e">Type</span> = <span style="color:#e6db74">&#34;s3&#34;</span>
+    <span style="color:#a6e22e">Path</span> = <span style="color:#e6db74">&#34;runners-cache&#34;</span>
+    <span style="color:#a6e22e">Shared</span> = <span style="color:#66d9ef">true</span>
+    [<span style="color:#a6e22e">runners</span>.<span style="color:#a6e22e">cache</span>.<span style="color:#a6e22e">s3</span>]
+      <span style="color:#a6e22e">ServerAddress</span> = <span style="color:#e6db74">&#34;s3.nl-ams.scw.cloud&#34;</span>
+      <span style="color:#a6e22e">AccessKey</span> = <span style="color:#e6db74">&#34;S3_ACCESS_KEY&#34;</span>
+      <span style="color:#a6e22e">SecretKey</span> = <span style="color:#e6db74">&#34;S3_SECRET_KEY&#34;</span>
+      <span style="color:#a6e22e">BucketName</span> = <span style="color:#e6db74">&#34;bucket-devtools-herschel&#34;</span>
+      <span style="color:#a6e22e">BucketLocation</span> = <span style="color:#e6db74">&#34;nl-ams&#34;</span>
+      <span style="color:#a6e22e">Insecure</span> = <span style="color:#66d9ef">false</span>
+    [<span style="color:#a6e22e">runners</span>.<span style="color:#a6e22e">cache</span>.<span style="color:#a6e22e">gcs</span>]</code></pre></div>
+
+<p>J&rsquo;ai rajouté dans <code>volumes</code> un montage de <code>ssh-keys</code> par défaut. On y stockera nos clef ssh pour le déploiement notamment. Je fait ça pour ne pas les mettre dans des variables d’environnements dans la version cloud de GitLab.
+J&rsquo;ai aussi ajouté la configuration pour stocker dans notre bucket S3 les fichiers de caches.
+Exécutez le runner via la commande suivante :</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-console" data-lang="console">docker run -d --name gitlab-runner-devtools1 --restart always \
+   -v /opt/gitlab-runner/config:/etc/gitlab-runner \
+   -v /var/run/docker.sock:/var/run/docker.sock \
+   gitlab/gitlab-runner:latest</code></pre></div>
+
+<p>source : <a href="https://docs.gitlab.com/runner/install/docker.html">https://docs.gitlab.com/runner/install/docker.html</a> et <a href="https://docs.gitlab.com/runner/register/">https://docs.gitlab.com/runner/register/</a></p>
+
+<p>Voilà, Voilà, vous êtes arrivés jusque ici ? Bravo ! 😎
+La prochaine fois je le refais avec <a href="https://www.terraform.io/">Terraform</a>, ou alors sur quelques raspberry pi 🤯&hellip;</p>
+</div>
+
+    
+    
+
+    
+
+        <h4 class="page-header">Related</h4>
+
+         <div class="item">
+
+    
+    
+    
+
+    
+    
+
+    <h4><a href="/post/mongodb34-raspberrypi-docker-hypriot/">MongoDb 3.4 sur Raspberry Pi 3 64Bits avec Docker (Hypriot)</a></h4>
+    <h5>October 21, 2017</h5>
+    
+    <a href="http://www.sebastien-fauvart.fr/tags/mongodb"><kbd class="item-tag">mongodb</kbd></a>
+    
+    <a href="http://www.sebastien-fauvart.fr/tags/raspberrypi"><kbd class="item-tag">raspberrypi</kbd></a>
+    
+    <a href="http://www.sebastien-fauvart.fr/tags/docker"><kbd class="item-tag">docker</kbd></a>
+    
+    <a href="http://www.sebastien-fauvart.fr/tags/hypriot"><kbd class="item-tag">hypriot</kbd></a>
+    
+
+</div>
+ 
+
+    
+
+    
+
+        <h4 class="page-header">Comments</h4>
+
+        <div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "www-sebastien-fauvart-fr" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    
+
+</main>
+
+        <footer>
+
+            <p class="copyright text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io">Hugo</a> and <a href="https://github.com/calintat/minimal">Minimal</a></p>
+
+        </footer>
+       
+    </body>
+
+</html>
+

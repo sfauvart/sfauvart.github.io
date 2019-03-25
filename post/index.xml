@@ -6,10 +6,21 @@
     <description>Recent content in Posts on Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>fr-fr</language>
-    <lastBuildDate>Sat, 21 Oct 2017 23:27:24 +0200</lastBuildDate>
+    <lastBuildDate>Sat, 23 Feb 2019 22:27:24 +0200</lastBuildDate>
     
 	<atom:link href="http://www.sebastien-fauvart.fr/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Usine logicielle avec Gitlab runner, Nexus, Sonar - Partie 1</title>
+      <link>http://www.sebastien-fauvart.fr/post/continuous-integration-part-1/</link>
+      <pubDate>Sat, 23 Feb 2019 22:27:24 +0200</pubDate>
+      
+      <guid>http://www.sebastien-fauvart.fr/post/continuous-integration-part-1/</guid>
+      <description>Introduction La vérification de la qualité de votre code, l&amp;rsquo;exécution de toutes sortes de tests et le maintien du contrôle de version peut devenir une tâche difficile à gérer.
+Et nous, les développeurs, en tant que créatures paresseuses, avons tendance à automatiser toutes ces tâches à répétition.
+Un service d&amp;rsquo;intégration continue (CI) une fois configuré avec notre environnement d&amp;rsquo;application peut lancer toutes ces tâches automatiquement chaque fois que le code est modifié dans nos référentiels.</description>
+    </item>
     
     <item>
       <title>MongoDb 3.4 sur Raspberry Pi 3 64Bits avec Docker (Hypriot)</title>
